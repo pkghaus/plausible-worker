@@ -1,0 +1,17 @@
+{
+  "name": "plausible-worker",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.20.2",
+    "msw": "^2.15.0",
+    "vitest": "^4.1.10",
+    "wrangler": "^4"
+  }
+}

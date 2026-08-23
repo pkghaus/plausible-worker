@@ -1,0 +1,16 @@
+name = "plausible-worker"
+main = "src/worker.js"
+compatibility_date = "2026-02-24"
+
+# pkg.haus's own deployment. The same worker also runs in a separate account
+# for other domains; Workers routes cannot reference a script in another
+# account, so the zone's account needs its own copy.
+
+# Plausible script URL per hostname.
+[vars.PLAUSIBLE]
+"pkg.haus" = "https://plausible.io/js/pa-kiBQqDx-awSRDKVVshfHr.js"
+"apt.pkg.haus" = "https://plausible.io/js/pa-mEJlz3lTr_8EIQ-Wy0aO5.js"
+
+[[routes]]
+pattern = "*pkg.haus/zk/*"
+zone_name = "pkg.haus"
