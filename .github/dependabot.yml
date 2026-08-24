@@ -1,0 +1,26 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      # One PR per advisory gets noisy fast when advisories overlap, which is
+      # what happened upstream. Collapse security fixes into a single PR.
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+      # And routine bumps into a single weekly one.
+      npm-version:
+        applies-to: version-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: "ci"
