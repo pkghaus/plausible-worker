@@ -23,6 +23,7 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: 22
+          cache: npm
 
       # No `|| npm install` fallback: a lockfile that no longer matches
       # package.json is a failure to fix, not to route around. The fallback
