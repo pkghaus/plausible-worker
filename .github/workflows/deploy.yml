@@ -24,9 +24,9 @@ jobs:
         with:
           node-version: 22
 
-      # No `|| npm install` fallback: a lockfile that no longer matches
+      # No `|| npm install` fallback: a lockfile that does not match
       # package.json is a failure to fix, not to route around. The fallback
-      # discarded the lockfile's guarantee at exactly the moment it mattered.
+      # discards the lockfile's guarantee at exactly the moment it matters.
       - name: Install
         run: npm ci
 
