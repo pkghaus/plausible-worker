@@ -10,7 +10,16 @@ compatibility_date = "2026-02-24"
 [vars.PLAUSIBLE]
 "pkg.haus" = "https://plausible.io/js/pa-kiBQqDx-awSRDKVVshfHr.js"
 "apt.pkg.haus" = "https://plausible.io/js/pa-mEJlz3lTr_8EIQ-Wy0aO5.js"
+"buildinfos.pkg.haus" = "https://plausible.io/js/pa-ZyiAC1M4BdYICTIP2cOFX.js"
 
 [[routes]]
 pattern = "*pkg.haus/zk/*"
+zone_name = "pkg.haus"
+
+# buildinfos.pkg.haus/* belongs to the buildinfos Worker and beats the wildcard
+# host above, so /zk/ there answered with that Worker's 404 page. A longer path
+# on the same host wins it back -- the mechanism that lets apt.pkg.haus/stats*
+# coexist with the archive Worker's apt.pkg.haus/*.
+[[routes]]
+pattern = "buildinfos.pkg.haus/zk/*"
 zone_name = "pkg.haus"

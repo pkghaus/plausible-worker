@@ -260,3 +260,22 @@ describe('POST /zk/api/event', () => {
     expect(response.status).toBe(405)
   })
 })
+
+// The real binding from wrangler.toml, not the fake one the routing tests
+// inject. A host added to a page but never added here resolves to 404 on
+// /zk/js/script.js, which from the page's side looks exactly like working
+// analytics: the tag is present and nothing throws.
+describe('the deployed PLAUSIBLE config', () => {
+  const sites = typeof env.PLAUSIBLE === 'string' ? JSON.parse(env.PLAUSIBLE) : env.PLAUSIBLE
+
+  it('carries a script for every host the estate serves pages from', () => {
+    for (const host of ['pkg.haus', 'apt.pkg.haus', 'buildinfos.pkg.haus']) {
+      expect(sites[host], host).toMatch(/^https:\/\/plausible\.io\/js\/pa-/)
+    }
+  })
+
+  it('gives each host its own script', () => {
+    const urls = Object.values(sites)
+    expect(new Set(urls).size).toBe(urls.length)
+  })
+})

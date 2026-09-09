@@ -17,6 +17,18 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
+    ignore:
+      # @cloudflare/vitest-pool-workers pins peer vitest ^4.1.0 (and the same
+      # range on @vitest/runner and @vitest/snapshot). Grouping does not make
+      # Dependabot respect a peer range: it moved vitest to 5 with no pool
+      # release accepting it, and `npm ci` then failed in Install with
+      # "Conflicting peer dependency: vitest@4.1.11", before any test ran.
+      #
+      # A major is safe only in lockstep with the pool. Drop this when the pool
+      # ships a release whose vitest peer allows the next major. Minor and patch
+      # updates are unaffected.
+      - dependency-name: vitest
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
