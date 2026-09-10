@@ -1,5 +1,5 @@
 import { env, createExecutionContext, waitOnExecutionContext } from 'cloudflare:test'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from './test-server.js'
 import worker from './worker.js'
@@ -68,6 +68,25 @@ describe('GET /zk/js/script.js', () => {
   it('returns 404 for an unknown host', async () => {
     const response = await callWorker('https://unknown.example/zk/js/script.js')
     expect(response.status).toBe(404)
+  })
+
+  // An upstream that ERRORS is different from one that answers 502: the fetch
+  // itself throws, and unhandled that surfaced as a 500 from this Worker,
+  // blaming us for plausible.io being down. The timeout added alongside this
+  // reaches the same path.
+  //
+  // The rejection is injected by replacing fetch rather than with msw's
+  // HttpResponse.error(). That helper makes its interceptor reject a promise
+  // nothing awaits, so vitest counts an unhandled error and fails the run
+  // with all tests passing, which is a confusing way to assert this.
+  it('an upstream that throws is a 502, not an uncaught 500', async () => {
+    vi.stubGlobal('fetch', () => Promise.reject(new TypeError('Failed to fetch')))
+    try {
+      const response = await callWorker('https://sub.example.net/zk/js/script.js')
+      expect(response.status).toBe(502)
+    } finally {
+      vi.unstubAllGlobals()
+    }
   })
 
   it('does not cache a failed upstream response', async () => {

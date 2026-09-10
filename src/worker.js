@@ -28,13 +28,31 @@ export default {
   },
 }
 
+// Analytics must never be the reason a page hangs. Neither subrequest had a
+// deadline, so an unresponsive upstream held the request open for as long as
+// the runtime allowed and the visitor's page waited on a script tag. Ten
+// seconds rather than the house default of thirty: nothing here is worth a
+// visible stall, and a lost pageview costs nothing anyone can see.
+const UPSTREAM_TIMEOUT_MS = 10_000
+
 async function getScript(request, url, env, ctx) {
   const scriptUrl = getScriptUrl(env, url.hostname)
   if (!scriptUrl) return new Response(null, { status: 404 })
 
   let response = await caches.default.match(request)
   if (!response) {
-    response = await fetch(scriptUrl)
+    try {
+      response = await fetch(scriptUrl, {
+        signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+      })
+    } catch (e) {
+      // A throw here was uncaught and surfaced as a 500 from this Worker,
+      // which reads as our fault rather than the upstream's. 502 says which
+      // side failed, and the browser treats a failed script tag the same way
+      // either: no analytics, page unaffected.
+      console.error('plausible script fetch failed:', e?.message ?? e)
+      return new Response(null, { status: 502 })
+    }
     if (response.ok) {
       ctx.waitUntil(caches.default.put(request, response.clone()))
     }
@@ -48,9 +66,15 @@ async function postData(request) {
   }
   const headers = new Headers(request.headers)
   headers.delete('cookie')
-  return await fetch('https://plausible.io/api/event', {
-    method: request.method,
-    headers,
-    body: request.body,
-  })
+  try {
+    return await fetch('https://plausible.io/api/event', {
+      method: request.method,
+      headers,
+      body: request.body,
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    })
+  } catch (e) {
+    console.error('plausible event post failed:', e?.message ?? e)
+    return new Response(null, { status: 502 })
+  }
 }
