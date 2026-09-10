@@ -70,6 +70,21 @@ describe('GET /zk/js/script.js', () => {
     expect(response.status).toBe(404)
   })
 
+  // An upstream that ERRORS is different from one that answers 502: the fetch
+  // itself throws, and unhandled that surfaced as a 500 from this Worker,
+  // blaming us for plausible.io being down. The timeout added alongside this
+  // reaches the same path.
+  it('an upstream that throws is a 502, not an uncaught 500', async () => {
+    server.use(
+      http.get('https://plausible.io/js/pa-ghi789.js', () => {
+        return HttpResponse.error()
+      })
+    )
+
+    const response = await callWorker('https://sub.example.net/zk/js/script.js')
+    expect(response.status).toBe(502)
+  })
+
   it('does not cache a failed upstream response', async () => {
     server.use(
       http.get('https://plausible.io/js/pa-abc123.js', () => {
