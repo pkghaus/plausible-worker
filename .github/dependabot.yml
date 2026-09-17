@@ -29,6 +29,13 @@ updates:
       # updates are unaffected.
       - dependency-name: vitest
         update-types: ["version-update:semver-major"]
+      #
+      # Related, and the reason package.json carries `overrides.sharp`: the
+      # pool's miniflare pins sharp 0.35.2 while wrangler's pins 0.35.4, and
+      # the override forces the single hoisted copy to 0.35.4. Dev-only and
+      # transitive -- nothing here processes images. Drop it when the pool
+      # ships a miniflare pinning 0.35.4 or later, which `npm ls sharp` shows
+      # as one hoisted copy with the override removed.
 
   - package-ecosystem: github-actions
     directory: /
