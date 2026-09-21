@@ -38,6 +38,13 @@ zone_name = "pkg.haus"
 pattern = "buildinfos.pkg.haus/zk/*"
 zone_name = "pkg.haus"
 
+# reproducible.pkg.haus/* is twenty-three characters and wins the wildcard
+# above, exactly as buildinfos did. Added with the host, not after someone
+# noticed the analytics were dark.
+[[routes]]
+pattern = "reproducible.pkg.haus/zk/*"
+zone_name = "pkg.haus"
+
 # Workers Logs. Every failure path here returns a response rather than
 # throwing, so without this a proxy that stopped working and a quiet week are
 # indistinguishable: the console.error calls had nowhere to go. Sampling stays
