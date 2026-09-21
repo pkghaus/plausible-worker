@@ -11,6 +11,7 @@ compatibility_date = "2026-02-24"
 "pkg.haus" = "https://plausible.io/js/pa-kiBQqDx-awSRDKVVshfHr.js"
 "apt.pkg.haus" = "https://plausible.io/js/pa-mEJlz3lTr_8EIQ-Wy0aO5.js"
 "buildinfos.pkg.haus" = "https://plausible.io/js/pa-ZyiAC1M4BdYICTIP2cOFX.js"
+"reproducible.pkg.haus" = "https://plausible.io/js/pa-4wOMLZblgmu6DCU1xj2o3.js"
 
 [[routes]]
 pattern = "*pkg.haus/zk/*"
