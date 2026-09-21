@@ -23,9 +23,16 @@ zone_name = "pkg.haus"
 #
 # What decides it is pattern length, not host specificity: measured 2026-09-17,
 # all three hosts serve 200 application/javascript on /zk/js/script.js, and
-# pkg.haus/* at ten characters loses to *pkg.haus/zk/* at fifteen while
-# buildinfos.pkg.haus/* at twenty-one wins. So the apex needs no pin and a
-# longer host added later will.
+# pkg.haus/* at ten characters loses to *pkg.haus/zk/* at FOURTEEN while
+# buildinfos.pkg.haus/* at twenty-one wins. A longer host added later needs a
+# pin of its own.
+#
+# This comment used to say fifteen, and used to conclude "the apex needs no
+# pin". Both were wrong. `*pkg.haus/zk/*` is fourteen characters, and the zone
+# has carried an explicit `pkg.haus/zk/*` route the whole time - live, owned by
+# this Worker, and absent from this file until 2026-09-21. Counting the
+# characters is the check; the file was the last place still asserting
+# otherwise.
 #
 # The apt pin is declared here because pkghaus/apt's own wrangler.toml states
 # it holds: "apt.pkg.haus/zk/* (plausible-worker) ... pinned explicitly rather
@@ -36,6 +43,27 @@ zone_name = "pkg.haus"
 
 [[routes]]
 pattern = "buildinfos.pkg.haus/zk/*"
+zone_name = "pkg.haus"
+
+# The apex. This route was LIVE and undeclared: the zone has had
+# `pkg.haus/zk/*` on this Worker since before 2026-09-17, while the deploy of
+# 9c54b98f that day declared only the three above and left it standing. So
+# wrangler does not remove a route it owns but the config omits - measured on
+# this account rather than inferred, because the documentation says only that
+# declared routes override, not what happens to undeclared ones.
+#
+# Declaring it anyway. Depending on undocumented behaviour to keep a live
+# route alive is the same mistake as reasoning about route precedence, which
+# this estate has got wrong twice.
+[[routes]]
+pattern = "pkg.haus/zk/*"
+zone_name = "pkg.haus"
+
+# reproducible.pkg.haus/* is twenty-three characters and wins the wildcard
+# above, exactly as buildinfos did. Added with the host, not after someone
+# noticed the analytics were dark.
+[[routes]]
+pattern = "reproducible.pkg.haus/zk/*"
 zone_name = "pkg.haus"
 
 # Workers Logs. Every failure path here returns a response rather than
