@@ -29,13 +29,18 @@ updates:
       # updates are unaffected.
       - dependency-name: vitest
         update-types: ["version-update:semver-major"]
+      # Same trap one level down: @vitest/mocker takes an optional peer msw
+      # ^2.4.9, and the npm that ships with Node 22 rejects a lockfile holding
+      # msw 3 as out of sync. Drop this when a vitest release widens that range.
+      - dependency-name: msw
+        update-types: ["version-update:semver-major"]
       #
-      # Related, and the reason package.json carries `overrides.sharp`: the
-      # pool's miniflare pins sharp 0.35.2 while wrangler's pins 0.35.4, and
-      # the override forces the single hoisted copy to 0.35.4. Dev-only and
-      # transitive -- nothing here processes images. Drop it when the pool
-      # ships a miniflare pinning 0.35.4 or later, which `npm ls sharp` shows
-      # as one hoisted copy with the override removed.
+      # Related, and the reason package.json carries `overrides`: the pool's
+      # miniflare pins sharp 0.35.2 and undici 7.29.0, while wrangler's pins
+      # 0.35.4 and 7.29.1, and each override forces the single hoisted copy to
+      # the patched one. Dev-only and transitive. Drop an override when the
+      # pool ships a miniflare pinning that version or later, which
+      # `npm ls <package>` shows as one hoisted copy with the override removed.
 
   - package-ecosystem: github-actions
     directory: /
