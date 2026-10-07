@@ -37,10 +37,11 @@ updates:
       #
       # Related, and the reason package.json carries `overrides`: the pool's
       # miniflare pins sharp 0.35.2 and undici 7.29.0, while wrangler's pins
-      # 0.35.4 and 7.29.1, and each override forces the single hoisted copy to
-      # the patched one. Dev-only and transitive. Drop an override when the
-      # pool ships a miniflare pinning that version or later, which
-      # `npm ls <package>` shows as one hoisted copy with the override removed.
+      # 0.35.4 and 7.29.1. The undici override forces the single hoisted copy
+      # to wrangler's patched one; the sharp override goes past both pins to
+      # 0.35.5. Dev-only and transitive. Drop an override when every miniflare
+      # in the tree pins that version or later, which `npm ls <package>` shows
+      # as one hoisted copy with the override removed.
 
   - package-ecosystem: github-actions
     directory: /
