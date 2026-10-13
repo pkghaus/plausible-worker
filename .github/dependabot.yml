@@ -17,31 +17,8 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
-    ignore:
-      # @cloudflare/vitest-pool-workers pins peer vitest ^4.1.0 (and the same
-      # range on @vitest/runner and @vitest/snapshot). Grouping does not make
-      # Dependabot respect a peer range: it moved vitest to 5 with no pool
-      # release accepting it, and `npm ci` then failed in Install with
-      # "Conflicting peer dependency: vitest@4.1.11", before any test ran.
-      #
-      # A major is safe only in lockstep with the pool. Drop this when the pool
-      # ships a release whose vitest peer allows the next major. Minor and patch
-      # updates are unaffected.
-      - dependency-name: vitest
-        update-types: ["version-update:semver-major"]
-      # Same trap one level down: @vitest/mocker takes an optional peer msw
-      # ^2.4.9, and the npm that ships with Node 22 rejects a lockfile holding
-      # msw 3 as out of sync. Drop this when a vitest release widens that range.
-      - dependency-name: msw
-        update-types: ["version-update:semver-major"]
-      #
-      # Related, and the reason package.json carries `overrides`: the pool's
-      # miniflare pins sharp 0.35.2 and undici 7.29.0, while wrangler's pins
-      # 0.35.4 and 7.29.1. The undici override forces the single hoisted copy
-      # to wrangler's patched one; the sharp override goes past both pins to
-      # 0.35.5. Dev-only and transitive. Drop an override when every miniflare
-      # in the tree pins that version or later, which `npm ls <package>` shows
-      # as one hoisted copy with the override removed.
+    # package.json overrides sharp past the exact pin in wrangler's miniflare,
+    # to 0.35.5. Drop the override once that miniflare pins 0.35.5 or later.
 
   - package-ecosystem: github-actions
     directory: /
