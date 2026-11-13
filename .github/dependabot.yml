@@ -17,8 +17,6 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
-    # package.json overrides sharp past the exact pin in wrangler's miniflare,
-    # to 0.35.5. Drop the override once that miniflare pins 0.35.5 or later.
 
   - package-ecosystem: github-actions
     directory: /
